@@ -7,17 +7,18 @@ class Migration(migrations.Migration):
 
 
     def import_departures(apps, schema_editor):
+        fcontent= "" #this is pre-allocated so I can dispose the file as soon as read
         Departure = apps.get_model("departures", "Departure")
         #insert = lambda d: Departure(**d).save()
-        departures = []
         try:
-            with open('departures.json') as f:
-                departures.extend(json.loads(f.read()))
+            with open("departures.json") as f:
+                fcontent = f.read() 
+            departures = json.loads(fcontent) # reading and converting to JSON after releasing the resource
             for d in departures:
                 dep = Departure(**d)
                 dep.save()
             #map(insert,departures)
-        except FileNotFoundError as fnf:
+        except FileNotFoundError as fnf: #JIC the file isn't there
             raise fnf
         except Exception as ex:
             raise ex
